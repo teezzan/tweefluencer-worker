@@ -14,14 +14,14 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             throw error1;
         }
 
-        var queue = 'task_queue';
+        var queue = 'influence_task';
         channel.assertQueue(queue, {
             durable: true
         });
 
         // create new Influence
         InfluenceModel.create({
-            goal: 3,
+            goal: 5,
             cost: 10000,
             keyword: "#uiop",
         }, (err, newFluence) => {

@@ -11,6 +11,8 @@ const InfluenceSchema = Schema({
   payment_ref: { type: String },
   cost: { type: Number, required: true },
   influencers: { type: Array, default: [] },
+  winners: { type: Array, default: [] },
+  winners_num: { type: Number, default: 3 },
   createdAt: { type: Date, default: Date.now() }
 }, { id: true });
 

@@ -4,26 +4,6 @@ let T_listen = new Twit(configlisten);
 let InfluenceModel = require("../models/Influence");
 
 
-
-// let tweetEvent = async (tweet) => {
-
-//     // Who sent the tweet?
-//     var name = tweet.user.screen_name;
-//     // console.log(name);
-//     // What is the text?
-//     var txt = tweet.text;
-//     console.log(txt)
-//     console.log(payload.tag)
-//     console.log(payload.id)
-//     // the status update or tweet ID in which we will reply
-//     // var nameID = tweet.id_str;
-
-//     // var reply = "Working on it! @" + name + ' ' + '. Give me a minute. Thanks';
-//     // console.log(reply);
-// };
-
-
-
 exports.listen = async (msg, channel) => {
     let tweetEvent = async (tweet) => {
 
@@ -39,7 +19,10 @@ exports.listen = async (msg, channel) => {
             $push: {
                 "influencers.$.tweets": tweet.id_str
             },
-            $inc: { "influencers.$.total": 1 }
+            $inc: { "influencers.$.total": 1 },
+            $set: {
+                "influencers.$.updatedAt": new Date()
+            }
 
         }, { multi: true });
         console.log("resp = ", resp);
@@ -49,7 +32,8 @@ exports.listen = async (msg, channel) => {
             let influencers = {
                 username: tweet.user.screen_name,
                 tweets: [tweet.id_str],
-                total: 1
+                total: 1,
+                updatedAt: new Date()
             }
             InfluenceModel.findByIdAndUpdate(payload.id, { $push: { influencers } }, { new: true }, (err, influence) => {
 
@@ -65,6 +49,7 @@ exports.listen = async (msg, channel) => {
             if (influence.current_status >= influence.goal) {
                 console.log("DOne and Dusted ", influence);
                 stream.stop()
+                this.complete(msg, channel);
                 channel.ack(msg)
             }
         });
@@ -76,4 +61,17 @@ exports.listen = async (msg, channel) => {
     var stream = T_listen.stream('statuses/filter', { track: `${payload.keyword}` });
     console.log('starting Listening to', payload.keyword)
     stream.on('tweet', tweetEvent);
+}
+
+exports.complete = async (msg, channel) => {
+    let payload = JSON.parse(msg.content.toString());
+    InfluenceModel.findById(payload.id, (err, influence) => {
+        if (err) return err
+        influence.influencers.sort((a, b) => b.total - a.total);
+        InfluenceModel.findByIdAndUpdate(payload.id, { $set: { winners: influence.influencers.splice(0, influence.winners_num) } }, { new: true }, (err, fin_influence) => {
+            if (err) return err
+            console.log("Done. Winners are")
+            console.table(fin_influence.winners);
+        })
+    })
 }

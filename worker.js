@@ -14,7 +14,7 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             throw error1;
         }
 
-        var queue = 'task_queue';
+        var queue = 'influence_task';
 
         // This makes sure the queue is declared before attempting to consume from it
         channel.assertQueue(queue, {
