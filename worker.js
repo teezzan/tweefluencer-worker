@@ -2,6 +2,8 @@
 
 var amqp = require('amqplib/callback_api');
 let logic = require('./logic')
+let db = require('./db')
+
 
 amqp.connect('amqp://localhost', function (error0, connection) {
     if (error0) {
@@ -19,10 +21,10 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             durable: true
         });
 
-        channel.consume(queue, function (msg) {
-            logic.listen(msg)
+        channel.consume(queue, (msg) => {
+            logic.listen(msg, channel)
         }, {
-            noAck: true
+            noAck: false
         });
     });
 });
