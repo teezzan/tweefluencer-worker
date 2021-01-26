@@ -10,4 +10,4 @@ RUN npm install
 COPY . .
 
 # EXPOSE 3333
-CMD [ "node", "worker.js" ]
+CMD [ "npm", "start" ]
