@@ -25,8 +25,6 @@ exports.listen = async (msg, channel) => {
             }
 
         }, { multi: true });
-        console.log("resp = ", resp);
-
 
         if (resp.nModified == 0) {
             let influencers = {
@@ -44,10 +42,9 @@ exports.listen = async (msg, channel) => {
 
         InfluenceModel.findByIdAndUpdate(payload.id, { $inc: { current_status: 1 } }, { new: true }, (err, influence) => {
             if (err) return err
-            console.log("current = ", influence.current_status)
+            console.log("current count for " + payload.keyword + " = ", influence.current_status)
 
             if (influence.current_status >= influence.goal) {
-                console.log("DOne and Dusted ", influence);
                 stream.stop()
                 this.complete(msg, channel);
                 channel.ack(msg)
@@ -72,6 +69,20 @@ exports.complete = async (msg, channel) => {
             if (err) return err
             console.log("Done. Winners are")
             console.table(fin_influence.winners);
+            let out = "The top tweets for " + `"${payload.keyword}"` + " came from ";
+            for (i in fin_influence.winners) {
+                out += ` @${fin_influence.winners[i].username} with ${fin_influence.winners[i].total} ${fin_influence.winners[i].total > 1 ? "tweets" : "tweet"}${fin_influence.winners.length - 1 == i ? "." : ","}`
+            }
+            console.log(out);
         })
     })
+}
+
+exports.dm = async (msg, channel) => {
+    // var stream = T_listen.stream('user')
+
+    // stream.on('direct_message', function (directMsg) {
+    //     console.log(directMsg)
+    // })
+    return
 }

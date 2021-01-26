@@ -3,9 +3,10 @@
 var amqp = require('amqplib/callback_api');
 let db = require('./db')
 let InfluenceModel = require("./models/Influence");
+const CONN_URL = process.env.CONN_URL || 'amqp://localhost'
 
 
-amqp.connect('amqp://localhost', function (error0, connection) {
+amqp.connect(CONN_URL, function (error0, connection) {
     if (error0) {
         throw error0;
     }
@@ -14,23 +15,22 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             throw error1;
         }
 
-        var queue = 'influence_task';
+        var queue = 'test_influence_task';
         channel.assertQueue(queue, {
             durable: true
         });
 
         // create new Influence
         InfluenceModel.create({
-            goal: 5,
+            goal: 40,
             cost: 10000,
-            keyword: "#uiop",
+            keyword: "Service Chiefs",
+            winners_num: 5
         }, (err, newFluence) => {
             if (err) {
                 console.log(err)
                 return err
             }
-
-            console.log(newFluence)
 
             channel.sendToQueue(queue, Buffer.from(JSON.stringify(newFluence)), {
                 persistent: true

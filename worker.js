@@ -3,9 +3,9 @@
 var amqp = require('amqplib/callback_api');
 let logic = require('./logic')
 let db = require('./db')
+const CONN_URL = process.env.CONN_URL || 'amqp://localhost'
 
-
-amqp.connect('amqp://localhost', function (error0, connection) {
+amqp.connect(CONN_URL, function (error0, connection) {
     if (error0) {
         throw error0;
     }
@@ -14,9 +14,8 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             throw error1;
         }
 
-        var queue = 'influence_task';
+        var queue = 'test_influence_task';
 
-        // This makes sure the queue is declared before attempting to consume from it
         channel.assertQueue(queue, {
             durable: true
         });
@@ -25,6 +24,18 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             logic.listen(msg, channel)
         }, {
             noAck: false
+        });
+        var dm_queue = 'dm_task';
+
+
+        channel.assertQueue(dm_queue, {
+            durable: true
+        });
+
+        channel.consume(dm_queue, (msg) => {
+            logic.dm(msg, channel)
+        }, {
+            noAck: true
         });
     });
 });

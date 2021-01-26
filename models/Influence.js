@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const InfluenceSchema = Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   keyword: { type: String, required: true },
+  tweet_id: { type: String, default: "" },
   completed: { type: Boolean, default: false },
   goal: { type: Number, required: true },
   current_status: { type: Number, default: 0 },
