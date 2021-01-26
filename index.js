@@ -21,7 +21,8 @@ amqp.connect(CONN_URL, function (error0, connection) {
         });
 
         channel.consume(queue, (msg) => {
-            logic.listen(msg, channel)
+            try { logic.listen(msg, channel) }
+            catch { channel.nack(msg) }
         }, {
             noAck: false
         });
@@ -33,7 +34,9 @@ amqp.connect(CONN_URL, function (error0, connection) {
         });
 
         channel.consume(dm_queue, (msg) => {
-            logic.dm(msg, channel)
+            try { logic.dm(msg, channel) }
+            catch { channel.nack(msg) }
+
         }, {
             noAck: true
         });
