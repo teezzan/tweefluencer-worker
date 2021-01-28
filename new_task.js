@@ -3,7 +3,7 @@
 var amqp = require('amqplib/callback_api');
 let db = require('./db')
 let InfluenceModel = require("./models/Influence");
-const CONN_URL = process.env.CONN_URL || 'amqp://localhost'
+const CONN_URL = process.env.CONN_URL || 'amqp://localhost' || 'amqps://crkrqcfr:RTABAL4W2uOHVDNLSfsMhysjk9UbnhWo@orangutan.rmq.cloudamqp.com/crkrqcfr'
 
 
 amqp.connect(CONN_URL, function (error0, connection) {
@@ -15,16 +15,17 @@ amqp.connect(CONN_URL, function (error0, connection) {
             throw error1;
         }
 
-        var queue = 'test_influence_task';
+        var queue = 'influence_task';
         channel.assertQueue(queue, {
             durable: true
         });
 
         // create new Influence
         InfluenceModel.create({
-            goal: 40,
+            goal: 5,
+            tweet_id: "1354892065830797319",
             cost: 10000,
-            keyword: "Service Chiefs",
+            keyword: "#uiop",
             winners_num: 5
         }, (err, newFluence) => {
             if (err) {
@@ -40,8 +41,4 @@ amqp.connect(CONN_URL, function (error0, connection) {
 
     });
 
-    setTimeout(function () {
-        connection.close();
-        process.exit(0);
-    }, 2000);
 });

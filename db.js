@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-let MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017/tweefluence";
+let MONGO_URL = process.env.MONGO_URL || "mongodb+srv://commitspy:commitspy@cluster0.4s2rm.mongodb.net/twf1?retryWrites=true&w=majority";
 
 mongoose.connect(
   MONGO_URL,

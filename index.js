@@ -14,11 +14,23 @@ amqp.connect(CONN_URL, function (error0, connection) {
             throw error1;
         }
 
-        var queue = 'test_influence_task';
+        var queue = 'influence_task';
+        var listenUnderTweetQUeue = 'undertweet_task';
+        var dm_queue = 'dm_task';
 
         channel.assertQueue(queue, {
             durable: true
         });
+
+        channel.assertQueue(listenUnderTweetQUeue, {
+            durable: true
+        });
+
+        channel.assertQueue(dm_queue, {
+            durable: true
+        });
+
+
 
         channel.consume(queue, (msg) => {
             try { logic.listen(msg, channel) }
@@ -26,12 +38,14 @@ amqp.connect(CONN_URL, function (error0, connection) {
         }, {
             noAck: false
         });
-        var dm_queue = 'dm_task';
 
-
-        channel.assertQueue(dm_queue, {
-            durable: true
+        channel.consume(listenUnderTweetQUeue, (msg) => {
+            try { logic.listenUnderTweet(msg, channel) }
+            catch { channel.nack(msg) }
+        }, {
+            noAck: false
         });
+
 
         channel.consume(dm_queue, (msg) => {
             try { logic.dm(msg, channel) }
