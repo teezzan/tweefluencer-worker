@@ -1,7 +1,9 @@
-const { configlisten } = require('./config');
+const { configlisten, configDM } = require('./config');
 var Twit = require('twit');
+let { TwitterClient } = require('twitter-api-client');
 let fs = require('fs')
 let T_listen = new Twit(configlisten);
+
 let InfluenceModel = require("../models/Influence");
 
 
@@ -126,6 +128,7 @@ exports.listenUnderTweet = async (msg, channel) => {
 
 
 exports.complete = async (msg, channel) => {
+    const twitterClient = new TwitterClient(configDM);
     let payload = JSON.parse(msg.content.toString());
     InfluenceModel.findById(payload.id, (err, influence) => {
         if (err) return err
@@ -137,8 +140,11 @@ exports.complete = async (msg, channel) => {
             let out = "The top tweets for " + `"${payload.keyword}"` + " came from ";
             for (i in fin_influence.winners) {
                 out += ` @${fin_influence.winners[i].username} with ${fin_influence.winners[i].total} ${fin_influence.winners[i].total > 1 ? "tweets" : "tweet"}${fin_influence.winners.length - 1 == i ? "." : ","}`
+                let parameters = { "event": { "type": "message_create", "message_create": { "target": { "recipient_id": `${fin_influence.winners[i].id}` }, "message_data": { "text": `You won the challenge for Top tweet for ${payload.keyword}. Please share your account details and phone number. Thank you` } } } }
+                twitterClient.directMessages.eventsNew(parameters).then(x => { console.log(x) }).catch(err => { console.log(err) })
             }
             console.log(out);
+
         })
     })
 }
