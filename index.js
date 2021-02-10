@@ -14,8 +14,8 @@ amqp.connect(CONN_URL, function (error0, connection) {
             throw error1;
         }
 
-        var queue = 'influence_task';
-        var listenUnderTweetQUeue = 'undertweet_task';
+        var queue = 'influence_task_queue';
+        var listenUnderTweetQUeue = 'undertweet_task_queue';
         var dm_queue = 'dm_task';
 
         channel.assertQueue(queue, {

@@ -29,6 +29,7 @@ exports.listen = async (msg, channel) => {
 
         if (resp.nModified == 0) {
             let influencers = {
+                id: tweet.user.id_str,
                 username: tweet.user.screen_name,
                 tweets: [tweet.id_str],
                 total: 1,
@@ -45,7 +46,7 @@ exports.listen = async (msg, channel) => {
             if (err) return err
             console.log("current count for " + payload.keyword + " = ", influence.current_status)
 
-            if (influence.current_status >= influence.goal) {
+            if ((influence.current_status >= influence.goal) || (influence.completed)) {
                 stream.stop()
                 this.complete(msg, channel);
                 channel.ack(msg)
@@ -97,6 +98,7 @@ exports.listenUnderTweet = async (msg, channel) => {
                 username: tweet.user.screen_name,
                 tweets: [tweet.id_str],
                 total: 1,
+                redeemed: false,
                 updatedAt: new Date()
             }
             InfluenceModel.findByIdAndUpdate(payload.id, { $push: { influencers } }, { new: true }, (err, influence) => {
@@ -133,7 +135,7 @@ exports.complete = async (msg, channel) => {
     InfluenceModel.findById(payload.id, (err, influence) => {
         if (err) return err
         influence.influencers.sort((a, b) => b.total - a.total);
-        InfluenceModel.findByIdAndUpdate(payload.id, { $set: { winners: influence.influencers.splice(0, influence.winners_num) } }, { new: true }, (err, fin_influence) => {
+        InfluenceModel.findByIdAndUpdate(payload.id, { $set: { winners: influence.influencers.splice(0, influence.winners_num), completed: true } }, { new: true }, (err, fin_influence) => {
             if (err) return err
             console.log("Done. Winners are")
             console.table(fin_influence.winners);

@@ -15,15 +15,15 @@ amqp.connect(CONN_URL, function (error0, connection) {
             throw error1;
         }
 
-        var queue = 'influence_task';
+        var queue = 'influence_task_queue';
         channel.assertQueue(queue, {
             durable: true
         });
 
         // create new Influence
         InfluenceModel.create({
-            goal: 5,
-            tweet_id: "1354892065830797319",
+            goal: 1,
+            // tweet_id: "1354892065830797319",
             cost: 10000,
             keyword: "#uiop",
             winners_num: 5
