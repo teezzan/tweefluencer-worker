@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
+require('dotenv').config()
 var amqp = require('amqplib/callback_api');
 let logic = require('./logic')
 let db = require('./db')
-const CONN_URL = process.env.CONN_URL || 'amqp://localhost'
+const CONN_URL = process.env.CONN_URL
 
 amqp.connect(CONN_URL, function (error0, connection) {
     if (error0) {

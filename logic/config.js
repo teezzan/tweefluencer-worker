@@ -1,13 +1,13 @@
 var configlisten = {
-    access_token: "1260298713693663234-7j5QHhHfIAT3MdH0XH8ad7vBIpusTn",
-    access_token_secret: "yhkB6dGAoJd0qyYKQqbAbVRX08AwZbuawT7UIUqYVHSS9",
-    consumer_key: "eNO6pXJ5uRJ0d8NwtDQC3bSxr",
-    consumer_secret: "6nGmRgioyxvsGgd13vLePITLrmtbezb2268tsdzonrrHcV5Tba"
+    access_token: process.env.ACCESS_TOKEN_LISTEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET_LISTEN,
+    consumer_key: process.env.CONSUMER_KEY_LISTEN,
+    consumer_secret: process.env.CONSUMER_SECRET_LISTEN
 }
 const configDM = {
-    apiKey: '3YdTOEbP9ImVFdB7HQ2cqyyaO',
-    apiSecret: 'SAddNlVewB4tfkEoS5qoQjodorYerXDQvCtsQlOFE4trC0Y5YZ',
-    accessToken: '1322838158258720769-sDuutpmi2RMuAvQfuwZVlLN8sQ10ua',
-    accessTokenSecret: 'f3qxRtupFyDnpy04Ev0MJTXlvfExBU6eF7rbmLaKyzTti',
+    apiKey: process.env.API_KEY_DM,
+    apiSecret: process.env.API_SECRET_DM,
+    accessToken: process.env.ACCESS_TOKEN_DM,
+    accessTokenSecret: process.env.ACCESS_TOKEN_SECRET_DM,
 }
 module.exports = { configlisten, configDM }
